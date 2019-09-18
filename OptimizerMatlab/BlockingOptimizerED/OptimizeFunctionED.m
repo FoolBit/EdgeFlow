@@ -1,9 +1,9 @@
-function f = OptimizeFunctionED(alpha, transmitSourceAP, compressionRatio, computeCapacity, generateSpeed)
-% ÁªÁ¢·½³ÌµÄ±äÐÎ
-% ÓÃÀ´ÓÅ»¯Çó½âalpha
+function f = OptimizeFunctionED(alpha, transmitSourceAP, compressionRatio, computeCapacityED, generateSpeedED)
+% ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌµÄ±ï¿½ï¿½ï¿½
+% ï¿½ï¿½ï¿½ï¿½ï¿½Å»ï¿½ï¿½ï¿½ï¿½alpha
 
-divisionPercentage = ComputeDivisionPercentageED(alpha, computeCapacity, generateSpeed);
-transmitSpeed = ComputeTransmitSpeedED(compressionRatio, divisionPercentage, computeCapacity);
+divisionPercentage = ComputeDivisionPercentageED(alpha, computeCapacityED, generateSpeedED);
+transmitSpeed = ComputeTransmitSpeedED(compressionRatio, divisionPercentage, computeCapacityED);
 
 f = abs(sum(transmitSpeed) - transmitSourceAP);
 end

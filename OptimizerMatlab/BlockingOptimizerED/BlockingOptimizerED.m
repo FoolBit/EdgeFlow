@@ -1,17 +1,12 @@
-function [divisionPercentage, transmitSpeed] = BlockingOptimizerED(transmitSourceAP,compressionRatio, paramsED)
+function [divisionPercentageED, transmitSpeedED] = BlockingOptimizerED(transmitSourceAP,compressionRatio, generateSpeedED, computeCapacityED)
 % transmit source AP: total transmit source at AP j
-% paramsED: [computeCapacity, generateSpeed]
 
-% ÌáÈ¡ED²ÎÊý
-computeCapacity = paramsED(:, 1);
-generateSpeed = paramsED(:, 2);
+% ï¿½Å»ï¿½ï¿½ï¿½ï¿?
+alpha = GetAlphaED(transmitSourceAP, compressionRatio, computeCapacityED, generateSpeedED); % division percentage for ED 1
 
-% ÓÅ»¯Çó½â
-alpha = GetAlphaED(transmitSourceAP, compressionRatio, computeCapacity, generateSpeed); % division percentage for ED 1
-
-% ·µ»ØÐÂµÄED²ÎÊý
-divisionPercentage = ComputeDivisionPercentageED(alpha, computeCapacity, generateSpeed);
-transmitSpeed = ComputeTransmitSpeedED(compressionRatio, divisionPercentage, computeCapacity);
+% ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½EDï¿½ï¿½ï¿½ï¿½
+divisionPercentageED = ComputeDivisionPercentageED(alpha, computeCapacityED, generateSpeedED);
+transmitSpeedED = generateSpeedED .* (1 + (compressionRatio - 1) * divisionPercentageED);
 
 end
 

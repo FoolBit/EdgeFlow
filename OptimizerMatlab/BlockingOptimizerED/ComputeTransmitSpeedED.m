@@ -1,5 +1,5 @@
-function transmitSpeed = ComputeTransmitSpeedED(compressionRatio, divisionPercentage, computeCapacity)
+function transmitSpeedED = ComputeTransmitSpeedED(compressionRatio, divisionPercentageED, computeCapacityED)
 
-transmitSpeed = ((compressionRatio - 1) * divisionPercentage + 1) .* computeCapacity ./ divisionPercentage  ; 
+transmitSpeedED = ((compressionRatio - 1) * divisionPercentageED + 1) .* computeCapacityED ./ divisionPercentageED  ; 
 
 end

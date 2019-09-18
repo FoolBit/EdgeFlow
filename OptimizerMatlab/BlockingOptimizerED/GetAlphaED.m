@@ -1,6 +1,6 @@
-function alpha = GetAlphaED(transmitSourceAP, compressionRatio, computeCapacity, generateSpeed)
+function alpha = GetAlphaED(transmitSourceAP, compressionRatio, computeCapacityED, generateSpeedED)
 
-fun = @(x)OptimizeFunctionED(x, transmitSourceAP, compressionRatio, computeCapacity, generateSpeed);
+fun = @(x)OptimizeFunctionED(x, transmitSourceAP, compressionRatio, computeCapacityED, generateSpeedED);
 
 x0 = rand();
 [alpha, fval] = fsolve(fun, x0);
