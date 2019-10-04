@@ -7,13 +7,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 
 public class FileUtils {
+    public static String getFullFilename(String filename)
+    {
+        return String.valueOf(Objects.requireNonNull(FileUtils.class.getClassLoader().getResource(filename)).getPath());
+    }
+
     public static String readFile(String filename){
-        String file = String.valueOf(FuncTest.class.getClassLoader().getResource(filename).getPath());
         byte[] buffer = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(filename);
             ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
             byte[] b = new byte[1024];
             int n;
@@ -30,8 +35,8 @@ public class FileUtils {
         return Base64.getEncoder().encodeToString(buffer);
     }
 
-    public static void writeFile(String filename, String file) throws IOException {
-        byte[] data = Base64.getDecoder().decode(file);
+    public static void writeFile(String filename, String filedata) throws IOException {
+        byte[] data = Base64.getDecoder().decode(filedata);
         FileOutputStream fos = new FileOutputStream(filename);
         fos.write(data,0,data.length);
     }

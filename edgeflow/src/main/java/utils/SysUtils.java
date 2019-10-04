@@ -10,14 +10,23 @@ import java.util.List;
 public class SysUtils {
     int n;
 
-    private static boolean execCmd(String cmd) throws IOException, InterruptedException {
+    public static long execCmd(String cmd) throws IOException, InterruptedException {
+        return execCmd(cmd, false);
+    }
+
+    private static long execCmd(String cmd, boolean wait) throws IOException, InterruptedException {
         List<String> command = Arrays.asList(cmd.split(" "));
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
         processBuilder.redirectErrorStream(true);
         Process p = processBuilder.start();
-        p.waitFor();
-        return p.exitValue() == 0;
+        if(wait)
+        {
+            p.waitFor();
+            return p.pid();
+        }
+        return p.pid();
+
 
         /*
         InputStream is = p.getInputStream();
@@ -36,41 +45,41 @@ public class SysUtils {
         return bs.substring(1);
     }
 
-    public void init(String Dev) throws IOException, InterruptedException {
-        String cmd = "tc qdisc add dev " + Dev +" root handle 1:  htb default 1";
+    public static void initTcQueue(String Dev) throws IOException, InterruptedException {
+        String cmd = String.format("tc qdisc add dev %s root handle 1:  htb default 1", Dev);
         execCmd(cmd);
     }
 
-    private void addTcClass(String Dev, int classid, int speed) throws IOException, InterruptedException {
-        String cmd = "tc class add dev "+ Dev +" parent 1:1 classid 1:"+ classid
-                +" htb rate "+ speed +" mbit";
+    public static void addTcClass(String Dev, int classid, int speed) throws IOException, InterruptedException {
+        String cmd = String.format("tc class add dev %s parent 1:1 classid 1:%d htb rate %d mbit",
+                Dev, classid, speed);
         execCmd(cmd);
     }
 
-    private void createCgroupDir(int classid) throws IOException, InterruptedException {
+    public static void createCgroupDir(int classid) throws IOException, InterruptedException {
         String dirname = "/sys/fs/cgroup/net_cls/MyClass"+classid;
         String cmd = "mkdir " + dirname;
         execCmd(cmd);
 
         String value = "0x"+toHex(1)+toHex(classid);
-        cmd = "echo " + value +" > " + dirname + "/net_cls.classid";
+        cmd = String.format("echo %s > %s/net_cls.classid", value, dirname);
         execCmd(cmd);
     }
 
-    public void initLimit(String Dev, int classid, int speed) throws IOException, InterruptedException {
+    public static void initSpeedLimit(String Dev, int classid, int speed) throws IOException, InterruptedException {
         addTcClass(Dev, classid, speed);
         createCgroupDir(classid);
     }
 
-    public void changeLimit(String Dev, int classid, int speed) throws IOException, InterruptedException {
-        String cmd = "tc class change dev "+ Dev +" parent 1:1 classid 1:"+ classid
-                +" htb rate "+ speed +" mbit";
+    public static void changeSpeedLimit(String Dev, int classid, int speed) throws IOException, InterruptedException {
+        String cmd = String.format("tc class change dev %s parent 1:1 classid 1:%d htb rate %d mbit",
+                Dev, classid, speed);
         execCmd(cmd);
     }
 
-    public void setLimit(long pid, int classid) throws IOException, InterruptedException {
+    public static void limitSpeedByPID(long pid, int classid) throws IOException, InterruptedException {
         String dirname = "/sys/fs/cgroup/net_cls/MyClass"+classid;
-        String cmd = "echo " + pid + " > " + dirname + "/tesks";
+        String cmd = String.format("echo %d > %s/tasks", pid, dirname);
         execCmd(cmd);
     }
 

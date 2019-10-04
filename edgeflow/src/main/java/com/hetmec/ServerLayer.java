@@ -2,10 +2,43 @@ package com.hetmec;
 
 import servers.Server;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 public class ServerLayer {
-    public static void main(String[] args) {
-        Server server = new Server();
-        server.init();
-        server.run();
+    private static Server server;
+    public static void main(String[] args) throws IOException, InterruptedException {
+        String sourceIP = "127.0.0.1";
+        int sourcePort = 8000;
+        String targetIP = "127.0.0.1";
+        int targetPort = 8001;
+        String devName = "en0";
+
+        server = new Server();
+        server.init(sourceIP,sourcePort,targetIP,targetPort,devName);
+        server.run(true);
+
+        runMenu();
+    }
+
+    static void runMenu()
+    {
+        String menu = "1.Print state\n2.Begin test\n3.Quit";
+        Scanner sc = new Scanner(System.in);
+
+        int choice;
+        while(true){
+            System.out.println(menu);
+            choice = sc.nextInt();
+            if(choice == 1){
+
+            }
+            else if(choice == 2){
+                server.sendCommandToAllBackground();
+            }
+            else if(choice == 3){
+                break;
+            }
+        }
     }
 }
