@@ -16,6 +16,7 @@ import utils.FileUtils;
 import utils.SysUtils;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class Server {
         this.targetPort = targetPort;
         this.devName = devName;
 
-        SysUtils.initTcQueue(devName);
+        //SysUtils.initTcQueue(devName);
     }
 
     public void addChild(String childIP, int childPort)
@@ -96,13 +97,12 @@ public class Server {
     public void run()
     {
         try {
-
-            TServerSocket serverTransport = new TServerSocket(sourcePort);
+            TServerSocket serverTransport = new TServerSocket(new InetSocketAddress(sourceIP,sourcePort));
             TThreadPoolServer.Args tArgs = new TThreadPoolServer.Args(serverTransport);
 
             tArgs.protocolFactory(new TBinaryProtocol.Factory());
 
-            TProcessor tprocessor = new serverConnect.Processor<serverConnect.Iface>(new serverConnectImpl());
+            TProcessor tprocessor = new serverConnect.Processor<serverConnect.Iface>(new serverConnectImpl(this));
             tArgs.processor(tprocessor);
 
             TServer server = new TThreadPoolServer(tArgs);
@@ -121,7 +121,7 @@ public class Server {
             int TIMEOUT = 30000;
             transport = new TSocket(targetIP, targetPort, TIMEOUT);
             TProtocol protocol = new TBinaryProtocol(transport);
-            serverConnect.Client client = new serverConnect.Client(protocol);
+            client = new serverConnect.Client(protocol);
             transport.open();
         }
         void close(){
@@ -131,11 +131,9 @@ public class Server {
 
     public void connect() throws TException {
         ServerConnectClient serverConnectClient = new ServerConnectClient(targetIP, targetPort);
-
         int result = serverConnectClient.client.connect(ID, sourceIP, sourcePort);
         setID(result);
         System.out.println("Thrify client result =: " + getID());
-
         serverConnectClient.close();
     }
 
@@ -164,12 +162,11 @@ public class Server {
     }
 
     public void outputData(){
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println(df.format(new Date()));
+        System.out.println(System.currentTimeMillis());
     }
 
     public long uploadFile(String data, int id) throws IOException, InterruptedException {
-        String filename = null;
+        String filename = FileUtils.getFullFilename("test.txt");
 
         if(type != serverType.EDLayer){
             System.out.println("Receive data from " + id);
