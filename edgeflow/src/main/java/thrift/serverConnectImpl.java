@@ -2,7 +2,6 @@ package thrift;
 
 import org.apache.thrift.TException;
 import servers.Server;
-import utils.SysUtils;
 
 import java.io.IOException;
 
@@ -17,11 +16,10 @@ public class serverConnectImpl implements serverConnect.Iface{
     }
 
     @Override
-    public int connect(int id, String sourceIP, int sourcePort) throws IOException, InterruptedException {
-        server.addChild(sourceIP, sourcePort);
-        ++n;
+    public int connect(String serverStr) throws IOException, ClassNotFoundException {
+        server.addChild(serverStr);
         System.out.println("Connected to" + n);
-        return n;
+        return n++;
     }
 
     @Override

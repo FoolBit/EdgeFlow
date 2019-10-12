@@ -12,17 +12,17 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import thrift.serverConnect;
 import thrift.serverConnectImpl;
-import utils.FileUtils;
-import utils.SysUtils;
+import utils.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Server {
+public class Server implements Serializable {
     public Server() {
     }
 
@@ -40,8 +40,7 @@ public class Server {
 
     private serverType type;
 
-    private List<String> childIP;
-    private List<Integer> childPort;
+    private List<Server> childs;
     private String sourceIP;
     private int sourcePort;
     private String targetIP;
@@ -58,8 +57,7 @@ public class Server {
 
     public void init(String sourceIP, int sourcePort, String targetIP, int targetPort, String devName) throws IOException, InterruptedException {
         ndata = 0;
-        childIP = new ArrayList<>();
-        childPort = new ArrayList<>();
+        childs = new ArrayList<>();
         this.sourceIP = sourceIP;
         this.sourcePort = sourcePort;
         this.targetIP = targetIP;
@@ -69,10 +67,9 @@ public class Server {
         //SysUtils.initTcQueue(devName);
     }
 
-    public void addChild(String childIP, int childPort)
-    {
-        this.childIP.add(childIP);
-        this.childPort.add(childPort);
+    public void addChild(String serverStr) throws IOException, ClassNotFoundException {
+        Server serverObj = (Server)ObjectUtils.stringToObject(serverStr);
+        this.childs.add(serverObj);
     }
 
     public int getID() {
@@ -129,11 +126,11 @@ public class Server {
         }
     }
 
-    public void connect() throws TException {
+    public void connect() throws TException, IOException {
         ServerConnectClient serverConnectClient = new ServerConnectClient(targetIP, targetPort);
-        int result = serverConnectClient.client.connect(ID, sourceIP, sourcePort);
+        int result = serverConnectClient.client.connect(ObjectUtils.objectToString(this));
         setID(result);
-        System.out.println("Thrify client result =: " + getID());
+        System.out.println("Thrift client result =: " + getID());
         serverConnectClient.close();
     }
 
@@ -143,8 +140,8 @@ public class Server {
     }
 
     public void sendCommandToAll() throws TException {
-        for(int i=0; i<childIP.size(); ++i){
-            sendCommand(childIP.get(i), childPort.get(i));
+        for(int i=0; i<childs.size(); ++i){
+            sendCommand(childs.get(i).sourceIP, childs.get(i).sourcePort);
         }
     }
 
@@ -220,6 +217,5 @@ class ServerBackgroundRun implements Runnable{
                 e.printStackTrace();
             }
         }
-
     }
 }

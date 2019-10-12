@@ -8,8 +8,8 @@ import java.util.Scanner;
 public class ServerLayer {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException {
-        //String sourceIP = "192.168.1.100";
-        String sourceIP = "127.0.0.1";
+        String sourceIP = "192.168.1.100";
+       // String sourceIP = "127.0.0.1";
         int sourcePort = 8000;
         String targetIP = "127.0.0.1";
         int targetPort = 8000;
