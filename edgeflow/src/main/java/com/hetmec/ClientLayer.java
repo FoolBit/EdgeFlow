@@ -1,23 +1,46 @@
 package com.hetmec;
 
 import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 import servers.Server;
+import thrift.serverConnect;
+import utils.DataUtils;
+import utils.FileUtils;
 
 import java.io.IOException;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class ClientLayer {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException, TException {
-        String sourceIP = "127.0.0.1";
-        int sourcePort = 8001;
-        String targetIP = "127.0.0.1";
-        int targetPort = 8000;
-        String devName = "en0";
 
+        //===================读取配置信息================
+        String filename = "config.properties";
+        Properties properties = FileUtils.getConfig(filename);
+        //===================end======================
+
+        //================初始化================
         server = new Server();
-        server.init(sourceIP,sourcePort,targetIP,targetPort,devName);
-        server.setType(Server.serverType.EDLayer);
+        server.init(properties);
+        DataUtils.init(properties);
+        //================end=================
+
+        //==================run=================
         server.run(true);
+        Scanner sc = new Scanner(System.in);
+        while(true)
+        {
+            System.out.println("1.Connect");
+            int choice = sc.nextInt();
+            if(choice == 1)
+                break;
+        }
         server.connect();
+
     }
 }

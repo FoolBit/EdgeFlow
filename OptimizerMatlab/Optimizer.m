@@ -15,11 +15,11 @@ paramsAP = reshape(paramsAP, nAP, nparamsAP);
 paramsAP = [paramsAP, paramsAP*0];
 totalComputeResourceAP = paramsAP(:, 1);
 totalTransmitResourceAP = paramsAP(:, 2);
-nChilds = paramsAP(:, 3);
-generateSpeedEquivalentAP = paramsAP(:, 4);
-divisionPercentageEquivalentAP = paramsAP(:, 5);
-betaSum = paramsAP(:, 6);
-childStartIdx = cumsum(paramsAP(:, idxNChilds)) - paramsAP(:, idxNChilds) + 1;
+nChilds = round(paramsAP(:, 3)); % It's a double data
+% generateSpeedEquivalentAP = paramsAP(:, 4);
+% divisionPercentageEquivalentAP = paramsAP(:, 5);
+% betaSum = paramsAP(:, 6);
+childStartIdx = cumsum(paramsAP(:, 3)) - paramsAP(:, 3) + 1;
 
 % ED params:    generateSpeedED, computeCapacityED, divisionPercentageED, transmitSpeedED,
 %               computeCapacityAP, divisionPercentageAP, transmitSpeedAP,
@@ -156,7 +156,7 @@ end
 
 if(~blocking)
     %% Non-blocking optimization
-    [divisionPercentageED, transmitSpeedED, computeCapacityAP, divisionPercentageAP, transmitSpeedAP] = ...
+    [divisionPercentageED, transmitSpeedED, computeCapacityAP, divisionPercentageAP, transmitSpeedAP, computeCapacityCC] = ...
         NonBlockingOptimizer(...
         nAP,...
         nED,...
@@ -172,7 +172,7 @@ if(~blocking)
         )
     
 end
-output = [divisionPercentageED, transmitSpeedED, computeCapacityAP, divisionPercentageAP, transmitSpeedAP];
+output = [divisionPercentageED, transmitSpeedED, computeCapacityAP, divisionPercentageAP, transmitSpeedAP, computeCapacityCC];
 nOutput = 5;
 output = reshape(output, nED * nOutput);
 end

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MATLABOptimizer">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/MATLABOptimizer.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

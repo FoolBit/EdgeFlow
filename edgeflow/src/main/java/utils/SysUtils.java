@@ -10,11 +10,11 @@ import java.util.List;
 public class SysUtils {
     int n;
 
-    public static long execCmd(String cmd) throws IOException, InterruptedException {
+    public static Process execCmd(String cmd) throws IOException, InterruptedException {
         return execCmd(cmd, false);
     }
 
-    private static long execCmd(String cmd, boolean wait) throws IOException, InterruptedException {
+    private static Process execCmd(String cmd, boolean wait) throws IOException, InterruptedException {
         List<String> command = Arrays.asList(cmd.split(" "));
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
@@ -23,19 +23,9 @@ public class SysUtils {
         if(wait)
         {
             p.waitFor();
-            return p.pid();
+            return p;
         }
-        return p.pid();
-
-
-        /*
-        InputStream is = p.getInputStream();
-        BufferedReader bs = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        while ((line = bs.readLine()) != null) {
-            System.out.println(line);
-        }
-        */
+        return p;
     }
 
     public static String toHex(int num)
