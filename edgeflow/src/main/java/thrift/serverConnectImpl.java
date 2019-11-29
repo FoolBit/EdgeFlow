@@ -15,7 +15,13 @@ public class serverConnectImpl implements serverConnect.Iface{
         this.server = server;
     }
 
+    // background是为了让每个任务都新建线程来执行
+    // 因为每个节点有很多个子节点，若在同一个线程中执行任务等待太长
+    // 用多线程可以同时给多个子节点发送信息
+
     @Override
+    // 上层记录当前有多少子节点连接到自己
+    // 子节点通过该函数连接上层节点，上层节点记录子节点的全部信息，并告诉子节点她对应的id是多少
     public int connect(String serverStr) throws IOException, ClassNotFoundException {
         BackgroundThread backgroundThread = new BackgroundThread(server, BackgroundThread.CONNECT);
         backgroundThread.setServerStr(serverStr);
@@ -27,6 +33,8 @@ public class serverConnectImpl implements serverConnect.Iface{
     }
 
     @Override
+    // 把指令cmd和参数arg发送给所有子节点
+    // handlecmd会根据cmd来执行不同任务
     public boolean sendCommand(int cmd, String arg) {
         BackgroundThread backgroundThread = new BackgroundThread(server, BackgroundThread.HANDLE_COMMAND);
         backgroundThread.setCmd(cmd);
@@ -38,6 +46,7 @@ public class serverConnectImpl implements serverConnect.Iface{
     }
 
     @Override
+    // 下层将处理完的数据发送给上层节点
     public boolean uploadFile(String arg, int id) {
         BackgroundThread backgroundThread = new BackgroundThread(server, BackgroundThread.UPLOAD);
         backgroundThread.setArg(arg);
@@ -47,6 +56,7 @@ public class serverConnectImpl implements serverConnect.Iface{
     }
 
     @Override
+    // 下层把原始数据发送给上层节点，让上层节点来执行任务
     public boolean executeTask(String data) throws TException {
         BackgroundThread backgroundThread = new BackgroundThread(server, BackgroundThread.EXECUTE_TASK);
         backgroundThread.setArg(data);
@@ -56,6 +66,7 @@ public class serverConnectImpl implements serverConnect.Iface{
     }
 }
 
+// 这个类就是为了能够新建线程来执行不同的任务
 class BackgroundThread implements Runnable
 {
     private Server server;

@@ -103,6 +103,7 @@ public class Server implements Serializable {
     }
 //-------------------------Strategy params end ---------------
 
+    // 把参数存到一个list里，方便传到matlab里
     public List<Double> getStrategyParams()
     {
         List<Double> q = new ArrayList<>();
@@ -123,9 +124,12 @@ public class Server implements Serializable {
     }
 
 
+    // 初始化，读取配置文件，设置参数
     public void init(Properties properties){
         ndata = 0;
-        childs = new ArrayList<>();
+        childs = new ArrayList<>(); // 存储子节点
+        // 每个ed节点都要有一个对应的dataQueue，这样他们的存取数据之间不会冲突
+        // 但是同一个ed的存和取之间会有等待关系
         dataQueues = new ArrayList<>();
         dataQueue_s = new ArrayList<>();
         dataQueses_CC = new ArrayList<>();
@@ -152,6 +156,7 @@ public class Server implements Serializable {
 
     }
 
+    // 子节点连接进来时，把信息存下来，并创建一个数据队列
     public void addChild(String serverStr) throws IOException, ClassNotFoundException {
         Server serverObj = (Server)ObjectUtils.stringToObject(serverStr);
 
@@ -165,6 +170,7 @@ public class Server implements Serializable {
         }
         else // CC layer
         {
+            // 要为ap的每个ed都创建一个数据队列
             for(DataUtils.DataQueue q:serverObj.dataQueues)
             {
                 Thread thread = new Thread(new DataUtils.ComputeThread(this, q));
@@ -216,6 +222,8 @@ public class Server implements Serializable {
         }
     }
 
+    // 写起来省事，不用每次都写这一段重复的部分了
+    // 这部分是通过thrift建立连接的过程
     public class ServerConnectClient{
         TTransport transport;
         serverConnect.Client client;
@@ -231,6 +239,7 @@ public class Server implements Serializable {
         }
     }
 
+    // 连接上层节点，并设定自己的id值
     public void connect() throws TException, IOException {
         ServerConnectClient serverConnectClient = new ServerConnectClient(targetIP, targetPort);
         int result = serverConnectClient.client.connect(ObjectUtils.objectToString(this));
@@ -239,6 +248,7 @@ public class Server implements Serializable {
         serverConnectClient.close();
     }
 
+    // 向自己的所有子节点发送指令 新建线程进行
     public void sendCommandToAllBackground(int cmd, String arg){
         Thread thread = new Thread(new ServerBackgroundRun(this, "sendCommandToAll", cmd, arg));
         thread.start();
@@ -258,22 +268,27 @@ public class Server implements Serializable {
         outputDate();
     }
 
+    // 通知ed开始执行任务
+    // 同时把所需数据下传
     public void sendStartCmd() throws IOException {
         int cmd = RUNNING_TASK;
         String arg = ObjectUtils.objectToString(DataUtils.getTargetData());
         sendCommandToAllBackground(cmd, arg);
     }
 
+    // 没用了
     public void uploadFileBackground(){
         Thread thread = new Thread(new ServerBackgroundRun(this, "uploadFile"));
         thread.start();
     }
 
+    // 输出时间 debug用
     public void outputDate(){
         System.out.println(System.currentTimeMillis());
     }
 
     static ServerConnectClient uploadServerConnectClient;
+    // 把处理好的数据上传
     public long uploadFile(String arg, int id) throws IOException, TException, ClassNotFoundException {
         if(uploadServerConnectClient == null)
             uploadServerConnectClient = new ServerConnectClient(targetIP, targetPort);
@@ -332,6 +347,8 @@ public class Server implements Serializable {
         putDataThread.start();
     }
 
+    // 主要的任务逻辑
+    // 人脸识别任务
     public void faceRecognize() throws TException, IOException {
         DataUtils.DataQueue dataQueue = new DataUtils.DataQueue();
         DataUtils.DataQueue_ dataQueue_ = new DataUtils.DataQueue_(dataQueue);
@@ -369,6 +386,7 @@ public class Server implements Serializable {
     }
 
 
+    // 通知ed开始执行任务
     public void runningTask(int cmd, String arg) throws IOException, ClassNotFoundException, TException {
         DataUtils.Data data = (DataUtils.Data)ObjectUtils.stringToObject(arg);
         DataUtils.saveData(DataUtils.dataDir+'/'+  DataUtils.targetDir+ '/'+DataUtils.targetFilename, data.getData());
@@ -384,7 +402,7 @@ public class Server implements Serializable {
 
     }
 
-
+    // 策略计算
     public void computeStrategy() throws MWException, IOException, TException {
         List<Double> paramsCC = getStrategyParams();
         List<Double> paramsAP = new ArrayList<>();
@@ -434,6 +452,7 @@ public class Server implements Serializable {
         }
     }
 
+    // 更新策略参数
     public void updateStrategy(int cmd, String arg) throws IOException, ClassNotFoundException, TException {
         Server upperLayer = (Server) ObjectUtils.stringToObject(arg);
         Server current = upperLayer.childs.get(ID);
@@ -457,6 +476,7 @@ public class Server implements Serializable {
         }
     }
 
+    // 看看上层传过来的时什么指令
     public boolean handleCommand(int cmd, String arg) throws IOException, ClassNotFoundException, TException {
         if(cmd == UPDATE_STRATEGY)
         {

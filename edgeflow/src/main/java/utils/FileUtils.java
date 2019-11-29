@@ -7,8 +7,11 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.Properties;
 
+// 用来进行文件读写等一系列文件操作
 public class FileUtils {
 
+    // path是一个绝对路径(文件夹的路径)
+    // 检测是否存在这个文件夹，如果不存在就新建这个文件夹
     public static boolean mkdir(String path)
     {
         File file = new File(path);
@@ -22,6 +25,7 @@ public class FileUtils {
         return true;
     }
 
+    // 获取path目录下所有文件的文件名，返回文件名的数组
     public static String[] getFileList(String path)
     {
         File file = new File(path);
@@ -42,6 +46,8 @@ public class FileUtils {
     }
 
     // get full file path in dir resources
+    // 在resources目录里的文件没办法用相对路径来查找
+    // 只能用这种奇怪的方式获得运行时的绝对路径
     public static String getFullFilename(String filename)
     {
         return String.valueOf(Objects.requireNonNull(FileUtils.class.getClassLoader().getResource(filename)).getPath());
@@ -69,6 +75,7 @@ public class FileUtils {
         return Base64.getEncoder().encodeToString(buffer);
     }
 
+    // 将数据写入文件中
     public static void writeFile(String filename, String filedata) throws IOException {
         byte[] data = Base64.getDecoder().decode(filedata);
         FileOutputStream fos = new FileOutputStream(filename);

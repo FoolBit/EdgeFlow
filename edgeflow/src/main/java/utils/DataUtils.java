@@ -7,12 +7,16 @@ import java.io.*;
 import java.util.*;
 
 public class DataUtils{
-
+    // 用来处理工作时的数据文件
+    // 一共有两个文件目录
+    // dataDir/targetDir 用来对比的目标文件的目录
+    // dataDir/sourceDir 需要检测的文件的目录
     public static String dataDir;
     public static String targetDir;
     public static String sourceDir;
     public static String targetFilename;
 
+    // 从配置文件中读取目录的名字，并创建文件夹
     public static void init(Properties properties)
     {
         dataDir = (String)properties.get("dataDir");
@@ -26,6 +30,9 @@ public class DataUtils{
 
     private static  List<String> fileLists;
     private static int pFile;
+
+    // 读取收集到的数据文件信息
+    // 获得文件名列表
     public static void initFileLists()
     {
         fileLists = Arrays.asList(FileUtils.getFileList(dataDir + '/' + sourceDir));
@@ -39,12 +46,16 @@ public class DataUtils{
         return data;
     }
 
+    // 获取文件列表中的下一个数据
+    // 工作时每次只处理一个数据
     public static String nextData(){
         if(pFile<fileLists.size())
             return fileLists.get(pFile++);
         return null;
     }
 
+    // 用来存储数据信息的类
+    // 方便在不同layer之间传递数据信息
     public static class Data  implements Serializable
     {
         private int id_ED;
@@ -104,6 +115,7 @@ public class DataUtils{
         }
     }
 
+
     public static boolean saveData(String filename, String filedata)
     {
         try {
@@ -115,6 +127,7 @@ public class DataUtils{
         }
     }
 
+    // 也是存储数据信息的类
     public static class ProcessedData implements Serializable
     {
         private int id_ED;
@@ -136,6 +149,8 @@ public class DataUtils{
     }
 
 
+    // 数据队列
+    // 见文档
     public static class PutDataThread implements Runnable
     {
         DataQueue_ q;
@@ -187,13 +202,10 @@ public class DataUtils{
                 else
                     cpulimit = 100;
 
-                // 具体计算的部分
-                // TODO
-                // 这里把调用Python的命令行指令添加进来即可
-                String cmd = String.format("cpulimit -l %f python *** ***", cpulimit);// 需要补完
+                String cmd = String.format("cpulimit -l %f python $s $s $s", cpulimit, "/home/fool/Workspace/faceRecognition/faceRecognition.py", targetFilename, filename);// 需要补完
                 Process p = null;
                 try {
-                    p = SysUtils.execCmd(cmd);
+                    p = SysUtils.execCmd(cmd, true);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -201,11 +213,7 @@ public class DataUtils{
                 }
 
                 InputStream is = p.getInputStream();
-                try {
-                    p.waitFor();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
                 BufferedReader bs = new BufferedReader(new InputStreamReader(is));
                 String result = null;
                 try {

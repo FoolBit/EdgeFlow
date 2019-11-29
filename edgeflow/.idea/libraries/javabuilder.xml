@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="javabuilder">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/main/resources/javabuilder.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -7,15 +7,22 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+// 用来处理系统指令的类
+
 public class SysUtils {
     int n;
 
+    // 在终端执行指令，不等待指令指令完毕，直接将进程返回
     public static Process execCmd(String cmd) throws IOException, InterruptedException {
         return execCmd(cmd, false);
     }
 
-    private static Process execCmd(String cmd, boolean wait) throws IOException, InterruptedException {
+    // 在终端执行指令，等待指令指令完毕再将进程返回
+    public static Process execCmd(String cmd, boolean wait) throws IOException, InterruptedException {
+        // ProcessBuilder需要将终端指令当成字符串数组来处理
         List<String> command = Arrays.asList(cmd.split(" "));
+
+        // 开始执行指令，得到进程p
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
         processBuilder.redirectErrorStream(true);
@@ -28,6 +35,7 @@ public class SysUtils {
         return p;
     }
 
+    // 以下是用来限制网速的 没用了
     public static String toHex(int num)
     {
         num = 1<<16 | num;
