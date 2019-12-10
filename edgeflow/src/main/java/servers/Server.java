@@ -139,7 +139,8 @@ public class Server implements Serializable {
         this.targetIP = (String)properties.get("targetIP");;
         this.targetPort = Integer.parseInt((String)properties.get("targetPort"));;
         this.devName = (String)properties.get("devName");
-
+        this.divisionPercentageED = Double.parseDouble((String)properties.get("divisionPercentageED"));;
+        this.divisionPercentageAP = Double.parseDouble((String)properties.get("divisionPercentageAP"));;
         String t = (String)properties.get("serverType");
         if(t.equals("EDLayer"))
         {
@@ -290,7 +291,7 @@ public class Server implements Serializable {
     static ServerConnectClient uploadServerConnectClient;
     // 把处理好的数据上传
     public long uploadFile(String arg, int id) throws IOException, TException, ClassNotFoundException {
-        if(uploadServerConnectClient == null)
+        if(type!=serverType.CCLayer && uploadServerConnectClient == null)
             uploadServerConnectClient = new ServerConnectClient(targetIP, targetPort);
 
         if(type == serverType.CCLayer)
@@ -317,8 +318,11 @@ public class Server implements Serializable {
 
         if(type == serverType.APLayer)
         {
-            if(Math.random() > data.getDivisionPercentageAP()) // 需要继续上传计算
+            double rand = Math.random();
+            if(rand > data.getDivisionPercentageAP()) // 需要继续上传计算
             {
+                System.out.println("rand:"+rand);
+                System.out.println("divisionPercentageAP:"+data.getDivisionPercentageAP());
                 data.setId_AP(ID);
                 execServerConnectClient.client.executeTask(ObjectUtils.objectToString(data));
                 return;
@@ -366,9 +370,12 @@ public class Server implements Serializable {
             dataFilename = DataUtils.nextData();
             if(dataFilename == null)
                 break;
-            if(Math.random()<= divisionPercentageED)
+            double rand = Math.random();
+            if(rand<= divisionPercentageED)
             {
                 // 本地算
+                System.out.println("rand:"+rand);
+                System.out.println("divisionPercentageED:"+divisionPercentageED);
                 Thread putDataThread = new Thread(new DataUtils.PutDataThread(dataQueue_, new DataUtils.Data(ID, dataFilename, divisionPercentageAP)));
                 putDataThread.start();
             }
@@ -389,7 +396,9 @@ public class Server implements Serializable {
     // 通知ed开始执行任务
     public void runningTask(int cmd, String arg) throws IOException, ClassNotFoundException, TException {
         DataUtils.Data data = (DataUtils.Data)ObjectUtils.stringToObject(arg);
-        DataUtils.saveData(DataUtils.dataDir+'/'+  DataUtils.targetDir+ '/'+DataUtils.targetFilename, data.getData());
+        String filename = DataUtils.dataDir+'/'+  DataUtils.targetDir+ '/'+DataUtils.targetFilename;
+        DataUtils.saveData(filename, data.getData());
+        System.out.println("filename;"+filename);
 
         if(type == serverType.APLayer)
         {

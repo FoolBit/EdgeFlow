@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class ServerLayer {
+public class CCLayer {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException, TException, MWException {
         //===================读取配置信息================
-        String filename = "config.properties";
+        String filename = "configCC.properties";
         Properties properties = FileUtils.getConfig(filename);
         //===================end======================
 

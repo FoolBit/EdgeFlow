@@ -15,12 +15,12 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class ClientLayer {
+public class APLayer {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException, TException {
 
         //===================读取配置信息================
-        String filename = "config.properties";
+        String filename = "configAP.properties";
         Properties properties = FileUtils.getConfig(filename);
         //===================end======================
 

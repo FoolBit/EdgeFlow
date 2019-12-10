@@ -50,7 +50,7 @@ public class DataUtils{
     // 工作时每次只处理一个数据
     public static String nextData(){
         if(pFile<fileLists.size())
-            return fileLists.get(pFile++);
+            return dataDir+'/'+sourceDir+'/'+fileLists.get(pFile++);
         return null;
     }
 
@@ -119,7 +119,7 @@ public class DataUtils{
     public static boolean saveData(String filename, String filedata)
     {
         try {
-            FileUtils.writeFile(dataDir+targetFilename, filedata);
+            FileUtils.writeFile(filename, filedata);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -202,7 +202,8 @@ public class DataUtils{
                 else
                     cpulimit = 100;
 
-                String cmd = String.format("cpulimit -l %f python $s $s $s", cpulimit, "/home/fool/Workspace/faceRecognition/faceRecognition.py", targetFilename, filename);// 需要补完
+                String cmd = String.format("python3 %s %s %s", "/home/fool/Worksapce/faceRecognition/faceRecognition.py", targetFilename, filename);// 需要补完
+                System.out.println("cmd:"+cmd);
                 Process p = null;
                 try {
                     p = SysUtils.execCmd(cmd, true);
@@ -236,7 +237,7 @@ public class DataUtils{
         }
     }
 
-    public  static class DataQueue_
+    public  static class DataQueue_ implements Serializable
     {
         private DataQueue q;
         public DataQueue_(DataQueue dataQueue)
@@ -250,7 +251,7 @@ public class DataUtils{
         }
     }
 
-    public static class DataQueue
+    public static class DataQueue implements Serializable
     {
         private Queue<Data> queue = new LinkedList<>();
         private boolean available = false;
