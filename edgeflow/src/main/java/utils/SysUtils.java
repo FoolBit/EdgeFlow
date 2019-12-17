@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,18 @@ public class SysUtils {
     // 在终端执行指令，不等待指令指令完毕，直接将进程返回
     public static Process execCmd(String cmd) throws IOException, InterruptedException {
         return execCmd(cmd, false);
+    }
+
+    public static List<Double> double2list(double [] arr_double)
+    {
+        List<Double> list=new ArrayList<Double>();
+        int num=arr_double.length;
+        Double [] arr_Double=new Double[num];
+        for(int i=0;i<num;i++){
+            arr_Double[i]=arr_double[i];//double[]转Double[]
+        }
+        list=Arrays.asList(arr_Double);//Double[]转List
+        return list;
     }
 
     // 在终端执行指令，等待指令指令完毕再将进程返回

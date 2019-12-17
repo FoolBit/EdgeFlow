@@ -11,7 +11,7 @@ totalTransmitResourceCC = paramsCC(:, 2);
 
 % AP params: totalComputeResource, totalTransmitResource, nChilds
 nparamsAP = 3;
-paramsAP = reshape(paramsAP, nAP, nparamsAP);
+paramsAP = reshape(paramsAP, [nAP, nparamsAP]);
 paramsAP = [paramsAP, paramsAP*0];
 totalComputeResourceAP = paramsAP(:, 1);
 totalTransmitResourceAP = paramsAP(:, 2);
@@ -25,7 +25,7 @@ childStartIdx = cumsum(paramsAP(:, 3)) - paramsAP(:, 3) + 1;
 %               computeCapacityAP, divisionPercentageAP, transmitSpeedAP,
 
 nparamsED = 7;
-paramsED = reshape(paramsED, nED, nparamsED);
+paramsED = reshape(paramsED, [nED, nparamsED]);
 
 generateSpeedED      = paramsED(:, 1);
 computeCapacityED    = paramsED(:, 2);
@@ -48,7 +48,7 @@ transmitSpeedED = generateSpeedED .* (1 + (rho - 1) * divisionPercentageED );
 for i = 1:nAP
     startIdx = childStartIdx(i);
     endIdx = startIdx + paramsAP(i, nChilds) -1;
-    totalTransmitSpeedED = sum(idxTransmitSpeedED(startIdx:endIdx));
+    totalTransmitSpeedED = sum(transmitSpeedED(startIdx:endIdx));
     if(totalTransmitSpeedED > totalTransmitResourceAP(i))
         blocking = 1;
         [divisionPercentageED, transmitSpeedED] = ...
@@ -82,9 +82,9 @@ end
     );
 
 % judge if blocking
-totalTransmitSpeedAP = sum(paramsED(:, idxTransmitSpeedAP));
+totalTransmitSpeedAP = sum(transmitSpeedAP);
 
-if(totalTransmitSpeedAP > paramsCC(idxTotalTransmitResourceCC))
+if(totalTransmitSpeedAP > totalTransmitResourceCC)
     blocking = 1;
     [divisionPercentageED, divisionPercentageEquivalentAP, ~] = ...
         BlockingOptimizerAP(...

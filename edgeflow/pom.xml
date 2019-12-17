@@ -34,11 +34,11 @@
           <version>1.0</version>
       </dependency>
 
-    <dependency>
-      <groupId>com.hetmec</groupId>
-      <artifactId>javabuilder</artifactId>
-      <version>1.0</version>
-    </dependency>
+      <dependency>
+          <groupId>com.hetmec</groupId>
+          <artifactId>javabuilder</artifactId>
+          <version>1.0</version>
+      </dependency>
   </dependencies>
 
   <build>

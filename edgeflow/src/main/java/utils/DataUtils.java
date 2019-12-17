@@ -202,7 +202,7 @@ public class DataUtils{
                 else
                     cpulimit = 100;
 
-                String cmd = String.format("python3 %s %s %s", "/home/fool/Worksapce/faceRecognition/faceRecognition.py", targetFilename, filename);// 需要补完
+                String cmd = String.format("python %s %s %s", "/home/fool/Workspace/faceRecognition/faceRecognition.py", targetFilename, filename);// 需要补完
                 System.out.println("cmd:"+cmd);
                 Process p = null;
                 try {

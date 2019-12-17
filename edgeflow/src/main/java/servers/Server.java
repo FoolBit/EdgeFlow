@@ -434,8 +434,24 @@ public class Server implements Serializable {
 
         // 调用matlab
         MyOptimizer myOptimizer = new MyOptimizer();
-        List<Double> result = Arrays.asList((Double[]) myOptimizer.Optimizer(nAP, nED, compressionRatio, paramsCC, paramsAP, paramsED));
 
+        Double[] paramsCC_ = (Double[])paramsCC.toArray(new Double[paramsCC.size()]);
+        Double[] paramsAP_ = (Double[])paramsAP.toArray(new Double[paramsAP.size()]);
+        Double[] paramsED_ = (Double[])paramsED.toArray(new Double[paramsED.size()]);
+        System.out.println("nAP: "+nAP);
+        System.out.println("nED: "+nED);
+        System.out.println("paramsCC:"+Arrays.toString(paramsCC_));
+        System.out.println("paramsAP:"+Arrays.toString(paramsAP_));
+        System.out.println("paramsED:"+Arrays.toString(paramsED_));
+
+        Object[] results = null;
+        results = myOptimizer.Optimizer(1,nAP, nED, compressionRatio, paramsCC_, paramsAP_, paramsED_);
+
+        MWNumericArray output = null; // 用于保存输出矩阵
+        output=(MWNumericArray) results[0];//将结果object转换成MWNumericArray
+
+
+        List<Double> result = SysUtils.double2list((double[])output.getDoubleData());
         // 读取新策略
         int cnt = 0;
         for(Server AP:childs)

@@ -13,6 +13,8 @@ import java.util.Scanner;
 public class CCLayer {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException, TException, MWException {
+
+        System.out.println(System.getProperty("java.library.path"));
         //===================读取配置信息================
         String filename = "configCC.properties";
         Properties properties = FileUtils.getConfig(filename);

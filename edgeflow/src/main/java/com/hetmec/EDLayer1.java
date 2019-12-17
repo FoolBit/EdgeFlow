@@ -13,6 +13,7 @@ public class EDLayer1 {
     private static Server server;
     public static void main(String[] args) throws IOException, InterruptedException, TException {
 
+        System.out.println(System.getProperty("java.library.path"));
         //===================读取配置信息================
         String filename = "configED1.properties";
         Properties properties = FileUtils.getConfig(filename);

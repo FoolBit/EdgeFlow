@@ -56,7 +56,7 @@ end
 if(blocking == 0)
     for i = 1:nAP
         startIdx = childStartIdx(i);
-        endIdx = startIdx + paramsAP(i, nChilds) -1;
+        endIdx = startIdx + nChilds(i) -1;
         computeAP = sum(computeCapacityAP(startIdx:endIdx));
         if(computeAP > totalComputeResourceAP(i))
             blocking = 1;
